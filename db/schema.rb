@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_10_053628) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_10_084519) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "boards", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_boards_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_boards_on_user_id"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -23,6 +32,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_10_053628) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "status", default: "todo", null: false
+    t.bigint "board_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "created_at"], name: "index_tasks_on_board_id_and_created_at"
+    t.index ["board_id"], name: "index_tasks_on_board_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -31,5 +50,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_10_053628) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "boards", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "tasks", "boards"
 end
